@@ -99,7 +99,7 @@ const data = {
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings/users",
       icon: Settings2,
       items: [
         {

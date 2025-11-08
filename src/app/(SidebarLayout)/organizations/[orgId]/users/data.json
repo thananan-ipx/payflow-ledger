@@ -1,0 +1,50 @@
+[
+  {
+    "id": "USR-001",
+    "orgId": "ORG-001",
+    "name": "สมหญิง จริงใจ",
+    "email": "contact@banchidee.com",
+    "role": "Admin",
+    "status": "Active"
+  },
+  {
+    "id": "USR-002",
+    "orgId": "ORG-001",
+    "name": "บัญชี 1 (บจก. บัญชีดี)",
+    "email": "acc1@banchidee.com",
+    "role": "Uploader",
+    "status": "Active"
+  },
+  {
+    "id": "USR-003",
+    "orgId": "ORG-002",
+    "name": "สมชาย มั่งคั่ง",
+    "email": "somchai@ruayruay.co.th",
+    "role": "Admin",
+    "status": "Active"
+  },
+  {
+    "id": "USR-004",
+    "orgId": "ORG-003",
+    "name": "John Smith",
+    "email": "john.s@sme-export.com",
+    "role": "Admin",
+    "status": "Inactive"
+  },
+  {
+    "id": "USR-005",
+    "orgId": "ORG-004",
+    "name": "ป้าชื่น",
+    "email": "chuenjai.coffee@gmail.com",
+    "role": "Admin",
+    "status": "Active"
+  },
+  {
+    "id": "USR-006",
+    "orgId": "ORG-004",
+    "name": "น้องพนักงาน",
+    "email": "staff@chuenjai.coffee",
+    "role": "Uploader",
+    "status": "Active"
+  }
+]

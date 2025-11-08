@@ -1,0 +1,23 @@
+[
+  {
+    "id": "ADMIN-001",
+    "name": "คุณ (แอดมินหลัก)",
+    "email": "m@example.com",
+    "role": "Owner",
+    "status": "Active"
+  },
+  {
+    "id": "ADMIN-002",
+    "name": "สมศรี นักบัญชี",
+    "email": "somsri@payflow.com",
+    "role": "Accountant",
+    "status": "Active"
+  },
+  {
+    "id": "ADMIN-003",
+    "name": "วิชัย ผู้ช่วย",
+    "email": "wichai@payflow.com",
+    "role": "Assistant",
+    "status": "Inactive"
+  }
+]

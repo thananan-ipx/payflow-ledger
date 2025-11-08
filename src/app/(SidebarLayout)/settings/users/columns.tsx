@@ -3,7 +3,7 @@
 import * as React from "react"
 import { z } from "zod"
 import { ColumnDef } from "@tanstack/react-table"
-import { IconDotsVertical, IconPlus } from "@tabler/icons-react"
+import { IconDotsVertical } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -35,53 +35,57 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { useIsMobile } from "@/hooks/use-mobile"
-import Link from "next/link"
 
-// 1. Define Zod Schema (โครงสร้างข้อมูล)
-export const organizationSchema = z.object({
+// 1. Define Zod Schema
+export const adminUserSchema = z.object({
   id: z.string(),
-  organizationName: z.string(),
-  contactName: z.string(),
-  email: z.string().email(),
-  phone: z.string(),
+  name: z.string().min(3, "ต้องมีอย่างน้อย 3 ตัวอักษร"),
+  email: z.string().email("อีเมลไม่ถูกต้อง"),
+  role: z.string(), // "Owner" | "Accountant" | "Assistant"
   status: z.string(), // "Active" | "Inactive"
 })
 
-export type Organization = z.infer<typeof organizationSchema>
+export type AdminUser = z.infer<typeof adminUserSchema>
 
 // 2. Helper Component: ฟอร์มสำหรับเพิ่ม/แก้ไข (ใช้ใน Drawer)
-type OrganizationFormProps = {
+type AdminUserFormProps = {
   mode: "create" | "edit"
-  organization?: Organization
-  onSave: (organization: Organization) => void
-  children: React.ReactNode // นี่คือปุ่ม Trigger
+  user?: AdminUser
+  onSave: (user: AdminUser) => void
+  children: React.ReactNode // ปุ่ม Trigger
 }
 
-export function OrganizationFormDrawer({
+export function AdminUserFormDrawer({
   mode,
-  organization,
+  user,
   onSave,
   children,
-}: OrganizationFormProps) {
+}: AdminUserFormProps) {
   const isMobile = useIsMobile()
   const [open, setOpen] = React.useState(false)
   const [formData, setFormData] = React.useState(
-    organization || {
-      id: mode === "create" ? `ORG-${Date.now()}` : "",
-      organizationName: "",
-      contactName: "",
+    user || {
+      id: mode === "create" ? `ADMIN-${Date.now()}` : "",
+      name: "",
       email: "",
-      phone: "",
+      role: "Assistant",
       status: "Active",
     }
   )
 
   React.useEffect(() => {
-    // Reset form data if organization prop changes (for editing)
-    if (organization) {
-      setFormData(organization)
+    if (user) {
+      setFormData(user)
+    } else if (mode === "create") {
+      setFormData({
+        id: `ADMIN-${Date.now()}`,
+        name: "",
+        email: "",
+        role: "Assistant",
+        status: "Active",
+      })
     }
-  }, [organization, open])
+  }, [user, mode, open])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -90,33 +94,21 @@ export function OrganizationFormDrawer({
     setFormData((prev) => ({ ...prev, [id]: value }))
   }
 
-  const handleStatusChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, status: value }))
+  const handleSelectChange = (id: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [id]: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // เพิ่มการ validate ด้วย Zod ตรงนี้ได้
     try {
-      organizationSchema.parse(formData)
+      adminUserSchema.parse(formData)
       onSave(formData)
       toast.success(
         mode === "create"
-          ? "สร้างองค์กรสำเร็จ!"
+          ? "สร้างผู้ใช้แอดมินสำเร็จ!"
           : "บันทึกการเปลี่ยนแปลงสำเร็จ!"
       )
       setOpen(false)
-      // Reset form for "create" mode
-      if (mode === "create") {
-        setFormData({
-          id: `ORG-${Date.now()}`,
-          organizationName: "",
-          contactName: "",
-          email: "",
-          phone: "",
-          status: "Active",
-        })
-      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.issues.map((err) => err.message).join(", "))
@@ -124,11 +116,12 @@ export function OrganizationFormDrawer({
     }
   }
 
-  const title = mode === "create" ? "เพิ่มองค์กรใหม่" : "แก้ไขข้อมูลองค์กร"
+  const title =
+    mode === "create" ? "เพิ่มผู้ใช้แอดมินใหม่" : "แก้ไขข้อมูลผู้ใช้แอดมิน"
   const description =
     mode === "create"
-      ? "กรอกรายละเอียดเพื่อสร้างองค์กรลูกค้าใหม่"
-      : `กำลังแก้ไขข้อมูลของ ${organization?.organizationName}`
+      ? "กรอกรายละเอียดเพื่อสร้างผู้ใช้ใหม่ในทีมของคุณ"
+      : `กำลังแก้ไขข้อมูลของ ${user?.name}`
 
   return (
     <Drawer
@@ -147,19 +140,10 @@ export function OrganizationFormDrawer({
           className="flex flex-col gap-4 overflow-y-auto px-4 text-sm"
         >
           <div className="flex flex-col gap-3">
-            <Label htmlFor="organizationName">ชื่อองค์กร</Label>
+            <Label htmlFor="name">ชื่อผู้ใช้</Label>
             <Input
-              id="organizationName"
-              value={formData.organizationName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="flex flex-col gap-3">
-            <Label htmlFor="contactName">ชื่อผู้ติดต่อ</Label>
-            <Input
-              id="contactName"
-              value={formData.contactName}
+              id="name"
+              value={formData.name}
               onChange={handleChange}
               required
             />
@@ -175,19 +159,28 @@ export function OrganizationFormDrawer({
             />
           </div>
           <div className="flex flex-col gap-3">
-            <Label htmlFor="phone">เบอร์โทรศัพท์</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+            <Label htmlFor="role">บทบาท (Role)</Label>
+            <Select
+              value={formData.role}
+              onValueChange={(value) => handleSelectChange("role", value)}
+            >
+              <SelectTrigger id="role" className="w-full">
+                <SelectValue placeholder="เลือกบทบาท" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Owner">Owner (จัดการทุกอย่าง)</SelectItem>
+                <SelectItem value="Accountant">Accountant (จัดการลูกค้า)</SelectItem>
+                <SelectItem value="Assistant">
+                  Assistant (ช่วยงานทั่วไป)
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex flex-col gap-3">
             <Label htmlFor="status">สถานะ</Label>
             <Select
               value={formData.status}
-              onValueChange={handleStatusChange}
+              onValueChange={(value) => handleSelectChange("status", value)}
             >
               <SelectTrigger id="status" className="w-full">
                 <SelectValue placeholder="เลือกสถานะ" />
@@ -211,11 +204,10 @@ export function OrganizationFormDrawer({
 }
 
 // 3. Define Columns
-// ฟังก์ชันนี้จะรับ "handler" (ฟังก์ชันที่มาจาก page) เพื่อให้ปุ่มในตารางสามารถอัปเดต state ที่ page ได้
 export const getColumns = (
-  onEdit: (org: Organization) => void,
+  onEdit: (user: AdminUser) => void,
   onDelete: (id: string) => void
-): ColumnDef<Organization>[] => [
+): ColumnDef<AdminUser>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -243,34 +235,32 @@ export const getColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: "organizationName",
-    header: "ชื่อองค์กร",
-    cell: ({ row }) => {
-      // ทำให้ชื่อองค์กรเป็นปุ่มสำหรับ Edit
-      return (
-        <Button
-          variant="link"
-          asChild
-          className="text-foreground w-fit px-0 text-left"
-        >
-          <Link href={`/organizations/${row.original.id}/users`}>
-            {row.original.organizationName}
-          </Link>
-        </Button>
-      )
-    },
-  },
-  {
-    accessorKey: "contactName",
-    header: "ผู้ติดต่อ",
+    accessorKey: "name",
+    header: "ชื่อผู้ใช้",
+    cell: ({ row }) => (
+      <Button
+        variant="link"
+        className="text-foreground w-fit px-0 text-left"
+        onClick={() => onEdit(row.original)}
+      >
+        {row.original.name}
+      </Button>
+    ),
   },
   {
     accessorKey: "email",
     header: "อีเมล",
   },
   {
-    accessorKey: "phone",
-    header: "เบอร์โทรศัพท์",
+    accessorKey: "role",
+    header: "บทบาท",
+    cell: ({ row }) => {
+      const role = row.original.role
+      let variant: "default" | "secondary" | "outline" = "outline"
+      if (role === "Owner") variant = "default"
+      if (role === "Accountant") variant = "secondary"
+      return <Badge variant={variant}>{role}</Badge>
+    },
   },
   {
     accessorKey: "status",
@@ -278,7 +268,14 @@ export const getColumns = (
     cell: ({ row }) => {
       const isActive = row.original.status === "Active"
       return (
-        <Badge variant={isActive ? "default" : "outline"} className={isActive ? "bg-green-600 dark:bg-green-500" : "text-muted-foreground"}>
+        <Badge
+          variant={isActive ? "default" : "outline"}
+          className={
+            isActive
+              ? "bg-green-600 dark:bg-green-500"
+              : "text-muted-foreground"
+          }
+        >
           {row.original.status}
         </Badge>
       )
@@ -287,7 +284,7 @@ export const getColumns = (
   {
     id: "actions",
     cell: ({ row }) => {
-      const organization = row.original
+      const user = row.original
 
       return (
         <DropdownMenu>
@@ -302,16 +299,15 @@ export const getColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuItem onClick={() => onEdit(organization)}>
+            <DropdownMenuItem onClick={() => onEdit(user)}>
               แก้ไข
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
               onClick={() => {
-                // เพิ่มการยืนยันก่อนลบ
-                if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบองค์กรนี้?")) {
-                  onDelete(organization.id)
+                if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้?")) {
+                  onDelete(user.id)
                 }
               }}
             >
