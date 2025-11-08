@@ -3,7 +3,9 @@
 import * as React from "react"
 import { z } from "zod"
 import { ColumnDef } from "@tanstack/react-table"
-import { IconDotsVertical, IconPlus } from "@tabler/icons-react"
+import { IconDotsVertical, IconFileText } from "@tabler/icons-react"
+import Link from "next/link"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -35,15 +37,14 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { useIsMobile } from "@/hooks/use-mobile"
-import Link from "next/link"
 
 // 1. Define Zod Schema (โครงสร้างข้อมูล)
 export const organizationSchema = z.object({
   id: z.string(),
-  organizationName: z.string(),
-  contactName: z.string(),
-  email: z.string().email(),
-  phone: z.string(),
+  organizationName: z.string().min(3, "ต้องมีอย่างน้อย 3 ตัวอักษร"),
+  contactName: z.string().min(3, "ต้องมีอย่างน้อย 3 ตัวอักษร"),
+  email: z.string().email("อีเมลไม่ถูกต้อง"),
+  phone: z.string().min(1, "กรุณากรอกเบอร์โทรศัพท์"),
   status: z.string(), // "Active" | "Inactive"
 })
 
@@ -77,11 +78,22 @@ export function OrganizationFormDrawer({
   )
 
   React.useEffect(() => {
-    // Reset form data if organization prop changes (for editing)
-    if (organization) {
-      setFormData(organization)
+    // Reset form data if organization prop changes (for editing) or when opening for create
+    if (open) {
+      if (mode === "edit" && organization) {
+        setFormData(organization)
+      } else if (mode === "create") {
+        setFormData({
+          id: `ORG-${Date.now()}`,
+          organizationName: "",
+          contactName: "",
+          email: "",
+          phone: "",
+          status: "Active",
+        })
+      }
     }
-  }, [organization, open])
+  }, [organization, mode, open]) // Rerun effect when drawer opens
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -106,17 +118,6 @@ export function OrganizationFormDrawer({
           : "บันทึกการเปลี่ยนแปลงสำเร็จ!"
       )
       setOpen(false)
-      // Reset form for "create" mode
-      if (mode === "create") {
-        setFormData({
-          id: `ORG-${Date.now()}`,
-          organizationName: "",
-          contactName: "",
-          email: "",
-          phone: "",
-          status: "Active",
-        })
-      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error(error.issues.map((err) => err.message).join(", "))
@@ -246,7 +247,7 @@ export const getColumns = (
     accessorKey: "organizationName",
     header: "ชื่อองค์กร",
     cell: ({ row }) => {
-      // ทำให้ชื่อองค์กรเป็นปุ่มสำหรับ Edit
+      // ทำให้ชื่อองค์กรเป็นลิงก์ไปยังหน้าจัดการผู้ใช้
       return (
         <Button
           variant="link"
@@ -278,7 +279,14 @@ export const getColumns = (
     cell: ({ row }) => {
       const isActive = row.original.status === "Active"
       return (
-        <Badge variant={isActive ? "default" : "outline"} className={isActive ? "bg-green-600 dark:bg-green-500" : "text-muted-foreground"}>
+        <Badge
+          variant={isActive ? "default" : "outline"}
+          className={
+            isActive
+              ? "bg-green-600 dark:bg-green-500"
+              : "text-muted-foreground"
+          }
+        >
           {row.original.status}
         </Badge>
       )
@@ -301,10 +309,18 @@ export const getColumns = (
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => onEdit(organization)}>
-              แก้ไข
+              แก้ไขข้อมูลองค์กร
             </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link href={`/organizations/${organization.id}/ledger`}>
+                <IconFileText className="mr-2 size-4" />
+                บันทึกรายจ่าย (Ledger)
+              </Link>
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
@@ -315,7 +331,7 @@ export const getColumns = (
                 }
               }}
             >
-              ลบ
+              ลบองค์กร
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

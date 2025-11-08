@@ -1,0 +1,57 @@
+[
+  {
+    "id": "EXP-001",
+    "orgId": "ORG-001",
+    "expenseDate": "2025-11-05",
+    "description": "ค่ากาแฟรับรองลูกค้า",
+    "amount": 450.00,
+    "paymentType": "กรรมการสำรองจ่าย",
+    "receiptStatus": "มีใบเสร็จ",
+    "notes": "ร้าน Starbucks",
+    "fileName": "receipt-starbucks.pdf"
+  },
+  {
+    "id": "EXP-002",
+    "orgId": "ORG-001",
+    "expenseDate": "2025-11-03",
+    "description": "ค่าเดินทาง Grab",
+    "amount": 120.50,
+    "paymentType": "เงินสด",
+    "receiptStatus": "ไม่มีใบเสร็จ",
+    "notes": "",
+    "fileName": ""
+  },
+  {
+    "id": "EXP-003",
+    "orgId": "ORG-001",
+    "expenseDate": "2025-10-28",
+    "description": "ค่าโฆษณา Facebook",
+    "amount": 5000.00,
+    "paymentType": "บัตรเครดิต",
+    "receiptStatus": "มีใบเสร็จ",
+    "notes": "ตัดบัตร KBank",
+    "fileName": "fb-ads-oct.png"
+  },
+  {
+    "id": "EXP-004",
+    "orgId": "ORG-002",
+    "expenseDate": "2025-11-01",
+    "description": "ค่าจ้าง Outsource",
+    "amount": 15000.00,
+    "paymentType": "เงินโอน",
+    "receiptStatus": "โอนให้ร้านค้า",
+    "notes": "โอนให้ K.วิชัย",
+    "fileName": "transfer-vichai.jpg"
+  },
+  {
+    "id": "EXP-005",
+    "orgId": "ORG-001",
+    "expenseDate": "2024-12-25",
+    "description": "ค่ากระเช้าปีใหม่",
+    "amount": 3000.00,
+    "paymentType": "กรรมการสำรองจ่าย",
+    "receiptStatus": "มีใบเสร็จ",
+    "notes": "ข้อมูลปีก่อน",
+    "fileName": "newyear-2024.pdf"
+  }
+]
