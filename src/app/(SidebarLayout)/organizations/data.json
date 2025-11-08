@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ORG-001",
+    "organizationName": "บริษัท บัญชีดี จำกัด",
+    "contactName": "สมหญิง จริงใจ",
+    "email": "contact@banchidee.com",
+    "phone": "081-234-5678",
+    "status": "Active"
+  },
+  {
+    "id": "ORG-002",
+    "organizationName": "หจก. ร่ำรวยการค้า",
+    "contactName": "สมชาย มั่งคั่ง",
+    "email": "somchai@ruayruay.co.th",
+    "phone": "02-555-1234",
+    "status": "Active"
+  },
+  {
+    "id": "ORG-003",
+    "organizationName": "SME ส่งออกรวดเร็ว",
+    "contactName": "John Smith",
+    "email": "john.s@sme-export.com",
+    "phone": "099-888-7766",
+    "status": "Inactive"
+  },
+  {
+    "id": "ORG-004",
+    "organizationName": "ร้านกาแฟชื่นใจ",
+    "contactName": "ป้าชื่น",
+    "email": "chuenjai.coffee@gmail.com",
+    "phone": "088-111-2233",
+    "status": "Active"
+  }
+]

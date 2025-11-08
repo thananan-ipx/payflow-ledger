@@ -118,6 +118,12 @@ const data = {
           title: "Limits",
           url: "#",
         },
+        {
+          title: "Organizations",
+          url: "/organizations", // นี่คือลิงก์ไปยังหน้าใหม่
+          icon: Frame, // หรือไอคอนอื่น ๆ ที่คุณต้องการ
+          isActive: false, // ตั้งค่าตาม Pathname ปัจจุบัน
+        },
       ],
     },
   ],
